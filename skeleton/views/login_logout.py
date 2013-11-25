@@ -20,24 +20,14 @@ def login_user(request):
     email = ''
     password = ''
     if request.POST:
-        email = request.POST['email']
+        usuario = request.POST['usuario']
         password = request.POST['password']
-        try:
-            nombre = request.POST['nombre']
-            user = Usuario(nombre=nombre,email=email)
-            user.set_password(password)
-            user.save()
-            user = authenticate(email=email, password=password)
-            login(request,user)
-            messages.warning(request, '<h1> Bienvenido %s </h1>' % (user.nombre,user.email))
+        user = authenticate(usuario=usuario, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
             return HttpResponseRedirect(next)
-        except:
-            user = authenticate(email=email, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                return HttpResponseRedirect(next)
-        
+    
     return render_to_response('login.html', context_instance=RequestContext(request))
 
 def logout_user(request):
